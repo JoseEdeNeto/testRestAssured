@@ -8,49 +8,43 @@ import static org.hamcrest.CoreMatchers.*;
 import org.junit.Test;
 import org.junit.BeforeClass;
 
-/**
- *
- * @author andreendo
- */
 public class FirstTest {
 
     @BeforeClass
     public static void beforeClass() {
         //configuracao do proxy
-        RestAssured.proxy = ProxySpecification
+        /*RestAssured.proxy = ProxySpecification
                 .host("10.20.10.50")
                 .withPort(3128)
-                .withAuth("username", "password");    
+                .withAuth("username", "password");    */
         
         RestAssured.registerParser("text/plain", Parser.JSON);
     }
     
     @Test
-    public void testHealthCheck() {
+    public void testBleachIs269() {
         when().
-                get("https://api.publicapis.org/health-check").
+                get("https://api.jikan.moe/v3/anime/269").
         then()
                 .statusCode(200).
-                body("alive", equalTo(true));
+                body("title", is("Bleach"));
     }
     
     @Test
-    public void testCategories() {
+    public void testBleachEpisodeIs366() {
         when().
-                get("https://api.publicapis.org/categories").
+                get("https://api.jikan.moe/v3/anime/269").
         then()
                 .statusCode(200).
-                body("$", hasItems("Animals", "Vehicle"));
-    }  
+                body("episodes", equalTo(366));
+    }
     
     @Test
-    public void testSpecificCategory() {
-        given().
-                params("category", "animals").
+    public void testFirstPageofBleachEpisodesHas100() {
         when().
-                get("https://api.publicapis.org/entries").
+                get("https://api.jikan.moe/v3/anime/269/episodes").
         then()
                 .statusCode(200).
-                body("count", equalTo(11));
-    }      
+                body("episodes.size()", is(100));
+    }
 }
